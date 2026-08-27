@@ -1,0 +1,62 @@
+private/
+# ----------------------------------------
+# BASIC OS / EDITOR JUNK
+# ----------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------
+# IDE / EDITOR FOLDERS
+# ----------------------------------------
+.vscode/
+.idea/
+*.iml
+
+# ----------------------------------------
+# NODE / FRONTEND (falls später genutzt)
+# ----------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------------------------------
+# PHP / COMPOSER (falls später genutzt)
+# ----------------------------------------
+vendor/
+composer.lock
+
+# ----------------------------------------
+# ENVIRONMENT / CONFIG
+# NEVER commit secrets or DB credentials
+# ----------------------------------------
+.env
+.env.local
+.env.production
+private/config.php
+
+# ----------------------------------------
+# CACHE / TEMP
+# ----------------------------------------
+cache/
+tmp/
+*.log
+
+# ----------------------------------------
+# GONEO / DEPLOYMENT
+# Avoid committing FTP artifacts or temp files
+# ----------------------------------------
+ftp-deploy-sync-state.json
+
+# ----------------------------------------
+# BUILD / DIST (falls später genutzt)
+# ----------------------------------------
+dist/
+build/
+
+# ----------------------------------------
+# IMAGES / UPLOADS (if user uploads files)
+# You can remove this if you want uploads in Git
+# ----------------------------------------
+uploads/
