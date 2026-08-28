@@ -28,6 +28,21 @@ button { padding: 10px; background: #444; color: white; border: none; width: 100
 <body>
 
 <div class="box">
+      <?php
+$section = "";
+
+if ($target_type === "sauna") {
+    $section = "#saunen";
+} elseif ($target_type === "restaurant") {
+    $section = "#restaurants";
+} elseif ($target_type === "combi") {
+    $section = "#combis";
+}
+?>
+<a href="index.php<?= $section ?>" class="btn" onclick="return confirm('Wenn du zurück gehst, wird deine Eingabe nicht gespeichert. Wirklich zurück?');">
+    ← Zurück
+</a>
+
     <h2>Write Review</h2>
 
     <form action="index.php?action=review_submit" method="POST">
