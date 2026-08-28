@@ -53,6 +53,9 @@ if ($view && in_array($view, $allowed_views)) {
 <title>Sauna & Grieche 24</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 </head>
 <body>
 
@@ -106,95 +109,6 @@ foreach ($saunas as $s) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Sauna & Grieche 24 – Rezensionen</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
-<style>
-body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #333; }
-header { background: #2b2b2b; color: white; padding: 20px; text-align: center; }
-nav { background: #444; display: flex; justify-content: center; gap: 30px; padding: 10px; }
-nav a { color: white; text-decoration: none; font-weight: bold; }
-.container { max-width: 1100px; margin: 20px auto; padding: 10px; }
-.section-title { font-size: 1.8rem; margin-bottom: 10px; border-left: 5px solid #444; padding-left: 10px; }
-.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-.card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-.card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #2b2b2b;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    transition: 0.2s;
-}
-
-.btn:hover {
-    background: #1f1f1f;
-}
-
-.btn-secondary {
-    background: #555;
-}
-
-.btn-secondary:hover {
-    background: #444;
-}
-.icon-outline {
-    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px black);
-}
-.marker {
-    background: white;
-    border: 2px solid black;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 14px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.marker-sauna {
-    color: #e67e22;
-}
-
-.marker-grieche {
-    color: #2980b9;
-}
-
-
-
-#map { width: 100%; height: 450px; border-radius: 10px; margin-bottom: 30px; border: 2px solid #ccc; }
-</style>
-</head>
-<body>
 
 <header>
     <h1>Sauna & Grieche 24</h1>
