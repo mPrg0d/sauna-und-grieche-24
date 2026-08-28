@@ -46,13 +46,12 @@ body { font-family: Arial; background: #f4f4f4; }
 .btn:hover {
     background: #1f1f1f;
 }
-
 </style>
 </head>
 <body>
 
 <div class="box">
-    <?php
+<?php
 $section = "";
 
 if ($target_type === "sauna") {
@@ -63,26 +62,23 @@ if ($target_type === "sauna") {
     $section = "#combis";
 }
 ?>
-
 <a href="index.php<?= $section ?>" class="btn">← Zurück</a>
-
     <h2>Reviews</h2>
-
     <?php foreach ($reviews as $r): ?>
         <div class="review">
             <h3><?= htmlspecialchars($r["title"]) ?></h3>
             <p><strong>By:</strong> <?= htmlspecialchars($r["username"]) ?></p>
 
             <p class="stars">
-                <?= str_repeat("★", intval($r["rating"])) ?>
-                <?= str_repeat("☆", 7 - intval($r["rating"])) ?>
+                <?
+                str_repeat("★", intval($r["rating"]))
+                str_repeat("☆", 7 - intval($r["rating"]))
+                ?>
             </p>
-
             <p><?= nl2br(htmlspecialchars($r["content"])) ?></p>
             <small><?= $r["created_at"] ?></small>
         </div>
     <?php endforeach; ?>
 </div>
-
 </body>
 </html>
