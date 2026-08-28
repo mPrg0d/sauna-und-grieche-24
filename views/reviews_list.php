@@ -75,7 +75,7 @@ if ($target_type === "sauna") {
 
             <p class="stars">
                 <?= str_repeat("★", intval($r["rating"])) ?>
-                <?= str_repeat("☆", 5 - intval($r["rating"])) ?>
+                <?= str_repeat("☆", 7 - intval($r["rating"])) ?>
             </p>
 
             <p><?= nl2br(htmlspecialchars($r["content"])) ?></p>
