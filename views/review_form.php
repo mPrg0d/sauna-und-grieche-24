@@ -22,7 +22,20 @@ if (!$target_type || !$target_id) {
 body { font-family: Arial; background: #f4f4f4; }
 .box { max-width: 600px; margin: 40px auto; background: white; padding: 20px; border-radius: 10px; }
 input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; }
-button { padding: 10px; background: #444; color: white; border: none; width: 100%; }
+.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #2b2b2b;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #1f1f1f;
+}
 </style>
 </head>
 <body>
@@ -64,6 +77,6 @@ if ($target_type === "sauna") {
             <option value="5">5 ★★★★★</option>
         </select>
 
-        <button type="submit">Submit Review</button>
+        <button type="submit" class="btn">Submit Review</button>
     </form>
 </div>
