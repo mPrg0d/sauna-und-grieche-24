@@ -18,7 +18,14 @@ body { font-family: Arial; background: #f4f4f4; }
     max-width: 450px; margin: 60px auto; background: white;
     padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
-input { width: 100%; padding: 10px; margin: 10px 0; }
+input {
+    padding: 10px;
+    width: 100%;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
 button {
     padding: 10px; width: 100%; background: #444;
     color: white; border: none; border-radius: 6px;
