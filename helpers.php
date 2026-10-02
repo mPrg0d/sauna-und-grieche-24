@@ -102,6 +102,23 @@ function format_rating(?array $stat): string
 }
 
 /**
+ * Lädt eine Bewertung inkl. Sterne, aber nur wenn sie dem angegebenen User gehört
+ */
+function load_own_review(PDO $pdo, int $reviewId, int $userId): ?array
+{
+    $stmt = $pdo->prepare("
+        SELECT r.id, r.target_type, r.target_id, r.title, r.content,
+               rt.id AS rating_id, rt.rating
+        FROM reviews r
+        LEFT JOIN ratings rt ON rt.review_id = r.id
+        WHERE r.id = :id AND r.user_id = :u
+        LIMIT 1
+    ");
+    $stmt->execute(["id" => $reviewId, "u" => $userId]);
+    return $stmt->fetch() ?: null;
+}
+
+/**
  * Bewertung als HTML-Block: große Zahl, "/ 7" und Anzahl der Bewertungen
  */
 function rating_html(?array $stat, string $label = ""): string

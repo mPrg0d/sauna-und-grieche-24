@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
@@ -123,6 +124,8 @@ CREATE TABLE IF NOT EXISTS ratings (
     target_type ENUM('sauna', 'restaurant', 'combi') NOT NULL,
     target_id INT NOT NULL,
     rating INT NOT NULL,
+    review_id INT NULL,
+    INDEX idx_ratings_review (review_id),
     CONSTRAINT chk_rating_range CHECK (rating BETWEEN 1 AND 7),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -173,6 +176,36 @@ if (!in_array("chk_rating_range", $checks, true)) {
     }
 
     execQuery($pdo, "ALTER TABLE ratings ADD CONSTRAINT chk_rating_range CHECK (rating BETWEEN 1 AND 7)");
+}
+
+// Bewertungen bearbeiten: Sterne fest mit ihrem Bewertungstext verknüpfen
+addColumnIfMissing($pdo, "ratings", "review_id", "INT NULL, ADD INDEX idx_ratings_review (review_id)");
+addColumnIfMissing($pdo, "reviews", "updated_at", "DATETIME NULL");
+
+// Bestehende Sterne ihrer Bewertung zuordnen. Beide wurden immer direkt
+// nacheinander gespeichert, daher passen sie je User + Ziel in ID-Reihenfolge zusammen.
+$unlinked = $pdo->query("
+    SELECT id, user_id, target_type, target_id
+    FROM ratings
+    WHERE review_id IS NULL
+    ORDER BY id
+")->fetchAll();
+
+$findReview = $pdo->prepare("
+    SELECT r.id FROM reviews r
+    WHERE r.user_id = :u AND r.target_type = :t AND r.target_id = :tid
+      AND NOT EXISTS (SELECT 1 FROM ratings x WHERE x.review_id = r.id)
+    ORDER BY r.id
+    LIMIT 1
+");
+$linkRating = $pdo->prepare("UPDATE ratings SET review_id = :rid WHERE id = :id");
+
+foreach ($unlinked as $rt) {
+    $findReview->execute(["u" => $rt["user_id"], "t" => $rt["target_type"], "tid" => $rt["target_id"]]);
+    $reviewId = $findReview->fetchColumn();
+    if ($reviewId) {
+        $linkRating->execute(["rid" => $reviewId, "id" => $rt["id"]]);
+    }
 }
 
 // E-Mail-Adresse für "Passwort vergessen"

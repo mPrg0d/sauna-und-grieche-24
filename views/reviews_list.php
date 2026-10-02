@@ -22,15 +22,17 @@ $related_combis = $target_type === "combi" ? [] : load_combis($pdo, $target_type
 
 // Reviews laden
 $stmt = $pdo->prepare("
-    SELECT r.title, r.content, r.created_at, u.username,
-           (SELECT rating FROM ratings WHERE user_id = r.user_id AND target_type = r.target_type AND target_id = r.target_id LIMIT 1) AS rating
+    SELECT r.id, r.user_id, r.title, r.content, r.created_at, r.updated_at, u.username, rt.rating
     FROM reviews r
     JOIN users u ON r.user_id = u.id
+    LEFT JOIN ratings rt ON rt.review_id = r.id
     WHERE r.target_type = :t AND r.target_id = :id
     ORDER BY r.created_at DESC
 ");
 $stmt->execute(["t" => $target_type, "id" => $target_id]);
 $reviews = $stmt->fetchAll();
+
+$currentUserId = (int)($_SESSION["user_id"] ?? 0);
 
 $eyebrows = [
     "sauna"      => ["Sauna", "eyebrow-sauna"],
@@ -142,6 +144,9 @@ page_start($target["name"]);
                 <span class="review-meta">
                     von <strong><?= htmlspecialchars($r["username"]) ?></strong>
                     · <?= date("d.m.Y", strtotime($r["created_at"])) ?>
+                    <?php if ($r["updated_at"]): ?>
+                        · bearbeitet am <?= date("d.m.Y", strtotime($r["updated_at"])) ?>
+                    <?php endif; ?>
                 </span>
             </div>
             <span class="stars" title="<?= $stars ?> von <?= RATING_MAX ?> Sternen">
@@ -149,6 +154,14 @@ page_start($target["name"]);
             </span>
         </div>
         <p class="review-body"><?= nl2br(htmlspecialchars($r["content"])) ?></p>
+
+        <?php if (is_author() && (int)$r["user_id"] === $currentUserId): ?>
+            <div class="review-actions">
+                <a class="btn btn-outline btn-sm" href="index.php?view=review_form&review_id=<?= (int)$r["id"] ?>">
+                    Bearbeiten
+                </a>
+            </div>
+        <?php endif; ?>
     </article>
 <?php endforeach; ?>
 

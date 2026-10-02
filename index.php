@@ -22,6 +22,7 @@ $allowed_views = [
 // Controllers (POST handlers)
 $allowed_actions = [
     'review_submit',
+    'review_update',
     'place_submit',
     'combi_submit'
 ];

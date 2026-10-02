@@ -709,6 +709,12 @@ h1.title-combi { font-size: clamp(1.9rem, 4vw, 2.7rem); }
 
 .review-body { margin: 0; }
 
+.review-actions {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
 /* ------------------------------
    Karten (Leaflet)
 ------------------------------ */

@@ -24,6 +24,8 @@ if (!$title || !$content || $rating < 1 || $rating > RATING_MAX) {
     die("Ungültige Bewertungsdaten.");
 }
 
+$pdo->beginTransaction();
+
 // Review speichern
 $stmt = $pdo->prepare("
     INSERT INTO reviews (user_id, target_type, target_id, title, content)
@@ -36,18 +38,22 @@ $stmt->execute([
     "title" => $title,
     "content" => $content
 ]);
+$review_id = $pdo->lastInsertId();
 
-// Rating speichern
+// Rating speichern, fest mit dem Review verknüpft
 $stmt = $pdo->prepare("
-    INSERT INTO ratings (user_id, target_type, target_id, rating)
-    VALUES (:u, :t, :id, :rating)
+    INSERT INTO ratings (user_id, target_type, target_id, rating, review_id)
+    VALUES (:u, :t, :id, :rating, :rid)
 ");
 $stmt->execute([
     "u" => $user_id,
     "t" => $target_type,
     "id" => $target_id,
-    "rating" => $rating
+    "rating" => $rating,
+    "rid" => $review_id
 ]);
+
+$pdo->commit();
 
 header("Location: index.php?view=reviews_list&type=$target_type&id=$target_id");
 exit;
