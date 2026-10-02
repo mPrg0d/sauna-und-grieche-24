@@ -72,13 +72,18 @@ function format_distance(float $km): string
 /**
  * Durchschnittsbewertungen aller Ziele
  * Rückgabe: [target_type][target_id] => ['avg' => float, 'count' => int]
+ *
+ * Es zählen nur Sterne, die zu einer vorhandenen Bewertung gehören –
+ * also genau die, die auf der Seite auch angezeigt werden.
+ * Verwaiste Sterne (z. B. nach dem Löschen einer Bewertung) bleiben außen vor.
  */
 function load_rating_stats(PDO $pdo): array
 {
     $rows = $pdo->query("
-        SELECT target_type, target_id, AVG(rating) AS avg_rating, COUNT(*) AS cnt
-        FROM ratings
-        GROUP BY target_type, target_id
+        SELECT r.target_type, r.target_id, AVG(rt.rating) AS avg_rating, COUNT(*) AS cnt
+        FROM ratings rt
+        JOIN reviews r ON r.id = rt.review_id
+        GROUP BY r.target_type, r.target_id
     ")->fetchAll();
 
     $stats = [];
