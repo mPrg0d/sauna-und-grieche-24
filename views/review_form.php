@@ -1,23 +1,32 @@
 <?php
+require_once __DIR__ . '/../helpers.php';
 
 // Nur Autoren dürfen schreiben
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "author") {
-    die("Only authors may write reviews.");
+if (!is_author()) {
+    die("Nur Autoren dürfen Bewertungen schreiben.");
 }
 
 // Zieltyp & ID müssen übergeben werden
-$target_type = $_GET["type"] ?? null; // sauna / restaurant
-$target_id   = $_GET["id"] ?? null;
+$target_type = $_GET["type"] ?? null; // sauna / restaurant / combi
+$target_id   = (int)($_GET["id"] ?? 0);
 
-if (!$target_type || !$target_id) {
-    die("Invalid review target.");
+if (!in_array($target_type, TARGET_TYPES, true)) {
+    die("Ungültiges Bewertungsziel.");
 }
+
+$target = load_target($pdo, $target_type, $target_id);
+
+if (!$target) {
+    die("Bewertungsziel nicht gefunden.");
+}
+
+$flash = flash_take();
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Write Review</title>
+<title>Bewertung schreiben</title>
 <style>
 body { font-family: Arial; background: #f4f4f4; }
 .box { max-width: 600px; margin: 40px auto; background: white; padding: 20px; border-radius: 10px; }
@@ -36,39 +45,43 @@ input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; }
 .btn:hover {
     background: #1f1f1f;
 }
+.flash { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; }
+.hint { color: #666; font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
 <div class="box">
-      <?php
-$section = "";
-
-if ($target_type === "sauna") {
-    $section = "#saunen";
-} elseif ($target_type === "restaurant") {
-    $section = "#restaurants";
-} elseif ($target_type === "combi") {
-    $section = "#combis";
-}
-?>
-<a href="index.php<?= $section ?>" class="btn" onclick="return confirm('Wenn du zurück gehst, wird deine Eingabe nicht gespeichert. Wirklich zurück?');">
+<a href="index.php<?= section_anchor($target_type) ?>" class="btn" onclick="return confirm('Wenn du zurück gehst, wird deine Eingabe nicht gespeichert. Wirklich zurück?');">
     ← Zurück
 </a>
 
-    <h2>Write Review</h2>
+    <?php if ($flash): ?>
+        <p class="flash"><?= htmlspecialchars($flash) ?></p>
+    <?php endif; ?>
+
+    <h2>Bewertung schreiben</h2>
+    <p><strong><?= htmlspecialchars($target["name"]) ?></strong></p>
+
+    <?php if ($target_type === "combi"): ?>
+        <p class="hint">
+            Bewerte das Gesamterlebnis: Wie gut passen Sauna und Restaurant zusammen?
+            Wie war der Weg, das Timing, das Essen nach dem Saunagang?
+            Sauna und Restaurant einzeln bewertest du auf deren eigenen Seiten.
+        </p>
+    <?php endif; ?>
 
     <form action="index.php?action=review_submit" method="POST">
         <input type="hidden" name="target_type" value="<?= htmlspecialchars($target_type) ?>">
-        <input type="hidden" name="target_id" value="<?= htmlspecialchars($target_id) ?>">
+        <input type="hidden" name="target_id" value="<?= $target_id ?>">
 
-        <label>Title</label>
+        <label>Titel</label>
         <input type="text" name="title" required>
 
-        <label>Review</label>
+        <label>Bewertung</label>
         <textarea name="content" rows="6" required></textarea>
 
-        <label>Rating (1–5)</label>
+        <label>Sterne (1–7)</label>
         <select name="rating" required>
             <option value="1">1 ★</option>
             <option value="2">2 ★★</option>
@@ -79,6 +92,8 @@ if ($target_type === "sauna") {
             <option value="7">7 ★★★★★★★</option>
         </select>
 
-        <button type="submit" class="btn">Submit Review</button>
+        <button type="submit" class="btn">Bewertung absenden</button>
     </form>
 </div>
+</body>
+</html>

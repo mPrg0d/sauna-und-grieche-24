@@ -106,9 +106,23 @@ foreach ($restaurants as $r) {
 }
 
 /* ------------------------------
-   OPTIONAL: Kombi-Erlebnisse
-   (falls du später eine eigene Tabelle willst)
+   KOMBI-ERLEBNISSE
+   (Sauna-Name => Restaurant-Name)
 ------------------------------ */
 
+$combis = [
+    "RheinBad Wesel – Saunalandschaft" => "Restaurant Hellas – seit 1985"
+];
+
+foreach ($combis as $saunaName => $restaurantName) {
+    $stmt = $pdo->prepare("
+        INSERT IGNORE INTO combis (sauna_id, restaurant_id)
+        SELECT s.id, r.id
+        FROM saunas s, restaurants r
+        WHERE s.name = :s AND r.name = :r
+    ");
+    $stmt->execute(["s" => $saunaName, "r" => $restaurantName]);
+}
+
 echo "<h2>Database filled successfully.</h2>";
-echo "<p>Users, Saunas and Restaurants inserted.</p>";
+echo "<p>Users, Saunas, Restaurants and Combis inserted.</p>";

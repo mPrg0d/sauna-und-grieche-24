@@ -1,20 +1,27 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../helpers.php';
 
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "author") {
-    die("Only authors may write reviews.");
+if (!is_author()) {
+    die("Nur Autoren dürfen Bewertungen schreiben.");
 }
 
 $user_id     = $_SESSION["user_id"];
-$target_type = $_POST["target_type"];
-$target_id   = $_POST["target_id"];
-$title       = trim($_POST["title"]);
-$content     = trim($_POST["content"]);
-$rating      = intval($_POST["rating"]);
+$target_type = $_POST["target_type"] ?? null;
+$target_id   = (int)($_POST["target_id"] ?? 0);
+$title       = trim((string)($_POST["title"] ?? ""));
+$content     = trim((string)($_POST["content"] ?? ""));
+$rating      = intval($_POST["rating"] ?? 0);
 
-if (!$target_type || !$target_id || !$title || !$content || $rating < 1 || $rating > 5) {
-    die("Invalid review data.");
+if (!in_array($target_type, TARGET_TYPES, true) || !load_target($pdo, $target_type, $target_id)) {
+    die("Bewertungsziel nicht gefunden.");
+}
+
+if (!$title || !$content || $rating < 1 || $rating > RATING_MAX) {
+    die("Ungültige Bewertungsdaten.");
 }
 
 // Review speichern
