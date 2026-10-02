@@ -1,3 +1,9 @@
 <Files "config.php">
     Require all denied
 </Files>
+
+# Einrichtungs-Skripte nicht öffentlich aufrufbar
+# (zum erneuten Ausführen vorübergehend auskommentieren)
+<FilesMatch "^(bootstrap|db_fill)\.php$">
+    Require all denied
+</FilesMatch>
