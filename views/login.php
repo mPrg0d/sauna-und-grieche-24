@@ -26,52 +26,44 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "Benutzername oder Passwort ist falsch.";
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Login</title>
-<style>
-body { font-family: Arial; background: #f4f4f4; }
-.login-box {
-    max-width: 400px; margin: 80px auto; background: white;
-    padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-input {  padding: 10px;
-    width: 100%;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-button { padding: 10px; width: 100%; background: #444; color: white; border: none; }
-.error { color: red; }
-.success { color: green; }
-.forgot { display: block; margin-top: 15px; text-align: center; color: #444; }
-</style>
-</head>
-<body>
 
-<div class="login-box">
-    <h2>Login</h2>
+page_start("Anmelden", "", "narrow");
+?>
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="eyebrow">Willkommen zurück</span>
+        <h1>Anmelden</h1>
+        <p>Melde dich an, um Bewertungen zu schreiben und neue Orte einzutragen.</p>
+    </div>
 
     <?php if (isset($_GET["reset"])): ?>
-        <p class="success">Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.</p>
+        <div class="alert alert-success">Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.</div>
     <?php endif; ?>
 
     <?php if ($error): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
+        <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Benutzername" required />
-        <input type="password" name="password" placeholder="Passwort" required />
-        <button type="submit">Login</button>
+        <div class="field">
+            <label for="username">Benutzername</label>
+            <input type="text" id="username" name="username" autocomplete="username" required
+                   value="<?= htmlspecialchars($username ?? "") ?>" />
+        </div>
+
+        <div class="field">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="btn btn-block">Anmelden</button>
     </form>
 
-    <a class="forgot" href="index.php?view=password_forgot">Passwort vergessen?</a>
+    <div class="form-footer">
+        <a href="index.php" class="btn btn-ghost">← Zur Startseite</a>
+        <a href="index.php?view=password_forgot">Passwort vergessen?</a>
+    </div>
 </div>
 
-</body>
-</html>
+<?php page_end(); ?>

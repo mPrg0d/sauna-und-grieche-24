@@ -102,6 +102,120 @@ function format_rating(?array $stat): string
 }
 
 /**
+ * Bewertung als HTML-Block: große Zahl, "/ 7" und Anzahl der Bewertungen
+ */
+function rating_html(?array $stat, string $label = ""): string
+{
+    $prefix = $label !== "" ? '<span class="score-label">' . htmlspecialchars($label) . '</span>' : "";
+
+    if (!$stat) {
+        return '<div class="score score-empty">' . $prefix . '<span class="score-none">Noch nicht bewertet</span></div>';
+    }
+
+    $count = $stat["count"] . " " . ($stat["count"] === 1 ? "Bewertung" : "Bewertungen");
+
+    return '<div class="score">' . $prefix
+         . '<span class="score-value">' . number_format($stat["avg"], 1, ',', '') . '</span>'
+         . '<span class="score-max">/ ' . RATING_MAX . ' ★</span>'
+         . '<span class="score-count">' . $count . '</span>'
+         . '</div>';
+}
+
+/**
+ * Titel eines Bewertungsziels als HTML; bei Kombis "Sauna & Taverne" mit kursivem &
+ */
+function target_title_html(string $type, array $target): string
+{
+    if ($type === "combi") {
+        return htmlspecialchars($target["sauna_name"])
+             . ' <em class="title-amp">&amp;</em> '
+             . htmlspecialchars($target["rest_name"]);
+    }
+    return htmlspecialchars($target["name"]);
+}
+
+/**
+ * Gemeinsamer Seitenkopf für alle Seiten
+ *  - $title:     Seitentitel (Browser-Tab)
+ *  - $extraHead: zusätzliche Tags im <head>, z. B. Leaflet-CSS
+ *  - $width:     "wide" für Übersichten, "narrow" für Formulare
+ */
+function page_start(string $title, string $extraHead = "", string $width = "wide"): void
+{
+    $loggedIn = isset($_SESSION["user_id"]);
+    ?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= htmlspecialchars($title) ?> · Sauna &amp; Grieche 24</title>
+<?= $extraHead ?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Source+Sans+3:wght@400;600&display=swap">
+<?php // Inline eingebunden, damit es unabhängig vom URL-Pfad der Seite funktioniert ?>
+<style>
+<?php readfile(__DIR__ . "/style.css"); ?>
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" href="index.php">
+            <span class="brand-name">Sauna <em>&amp;</em> Grieche</span>
+            <span class="brand-badge">24</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Hauptnavigation">
+            <a href="index.php#saunen">Saunen</a>
+            <a href="index.php#restaurants">Tavernen</a>
+            <a href="index.php#combis">Kombis</a>
+            <span class="site-nav-sep" aria-hidden="true"></span>
+            <?php if ($loggedIn): ?>
+                <a href="index.php?view=user_settings" class="site-nav-user">
+                    <?= htmlspecialchars($_SESSION["username"]) ?>
+                </a>
+                <a href="index.php?view=logout">Abmelden</a>
+            <?php else: ?>
+                <a href="index.php?view=login" class="site-nav-cta">Anmelden</a>
+            <?php endif; ?>
+        </nav>
+    </div>
+    <div class="meander" aria-hidden="true"></div>
+</header>
+
+<main id="main" class="page page-<?= $width === "narrow" ? "narrow" : "wide" ?>">
+    <?php
+}
+
+/**
+ * Gemeinsamer Seitenfuß
+ *  - $extraScripts: Script-Tags, die am Ende des <body> stehen sollen
+ */
+function page_end(string $extraScripts = ""): void
+{
+    ?>
+</main>
+
+<footer class="site-footer">
+    <div class="meander" aria-hidden="true"></div>
+    <div class="site-footer-inner">
+        <span class="brand-name">Sauna <em>&amp;</em> Grieche 24</span>
+        <span>Erst schwitzen, dann Gyros.</span>
+    </div>
+</footer>
+
+<?= $extraScripts ?>
+</body>
+</html>
+    <?php
+}
+
+/**
  * Kombis (Sauna + Restaurant) inkl. Namen, Koordinaten und Entfernung laden.
  * Optional gefiltert auf eine bestimmte Sauna oder ein bestimmtes Restaurant.
  */

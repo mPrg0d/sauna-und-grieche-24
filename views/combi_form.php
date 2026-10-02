@@ -15,81 +15,70 @@ $selectedRestaurant = (int)($_GET["restaurant_id"] ?? 0);
 
 $error = $_SESSION["form_error"] ?? null;
 unset($_SESSION["form_error"]);
+
+page_start("Kombi anlegen", "", "narrow");
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Kombi anlegen</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body { font-family: Arial; background: #f4f4f4; }
-.box { max-width: 600px; margin: 40px auto; background: white; padding: 20px; border-radius: 10px; }
-select { width: 100%; padding: 10px; margin: 10px 0; }
-.btn {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #2b2b2b;
-    color: white;
-    text-decoration: none;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.btn:hover { background: #1f1f1f; }
-.error { color: red; }
-.hint { color: #666; font-size: 0.9rem; }
-</style>
-</head>
-<body>
 
-<div class="box">
-    <a href="index.php#combis" class="btn">← Zurück</a>
+<a href="index.php#combis" class="btn btn-ghost back-link">← Zurück</a>
 
-    <h2>Kombi anlegen</h2>
-    <p class="hint">
-        Eine Kombi ist dein Tagesablauf aus Sauna und anschließendem Besuch beim Griechen.
-        Nach dem Anlegen kannst du das Gesamterlebnis direkt bewerten.
-    </p>
+<div class="panel">
+    <div class="panel-header">
+        <span class="eyebrow">Das Gesamterlebnis</span>
+        <h1>Kombi anlegen</h1>
+        <p>
+            Eine Kombi ist dein Tagesablauf aus Sauna und anschließendem Besuch beim Griechen.
+            Nach dem Anlegen kannst du das Gesamterlebnis direkt bewerten.
+        </p>
+    </div>
 
     <?php if ($error): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
+        <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <?php if (!$saunas || !$restaurants): ?>
-        <p>Für eine Kombi braucht es mindestens eine Sauna und ein griechisches Restaurant.</p>
-        <a class="btn" href="index.php?view=place_form&type=sauna">+ Sauna hinzufügen</a>
-        <a class="btn" href="index.php?view=place_form&type=restaurant">+ Restaurant hinzufügen</a>
+        <div class="alert alert-info">Für eine Kombi braucht es mindestens eine Sauna und ein griechisches Restaurant.</div>
+        <div class="actions">
+            <a class="btn btn-outline" href="index.php?view=place_form&type=sauna">+ Sauna hinzufügen</a>
+            <a class="btn btn-outline" href="index.php?view=place_form&type=restaurant">+ Restaurant hinzufügen</a>
+        </div>
     <?php else: ?>
     <form action="index.php?action=combi_submit" method="POST">
-        <label>Sauna</label>
-        <select name="sauna_id" id="sauna" required>
-            <option value="">– Sauna wählen –</option>
-            <?php foreach ($saunas as $s): ?>
-                <option value="<?= $s["id"] ?>" <?= $s["id"] == $selectedSauna ? "selected" : "" ?>>
-                    <?= htmlspecialchars($s["name"] . " (" . $s["city"] . ")") ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+        <div class="field">
+            <label for="sauna"><span class="eyebrow eyebrow-sauna">Zuerst</span>Sauna</label>
+            <select name="sauna_id" id="sauna" required>
+                <option value="">– Sauna wählen –</option>
+                <?php foreach ($saunas as $s): ?>
+                    <option value="<?= $s["id"] ?>" <?= $s["id"] == $selectedSauna ? "selected" : "" ?>>
+                        <?= htmlspecialchars($s["name"] . " (" . $s["city"] . ")") ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-        <label>Griechisches Restaurant</label>
-        <select name="restaurant_id" id="restaurant" required>
-            <option value="">– Restaurant wählen –</option>
-            <?php foreach ($restaurants as $r): ?>
-                <option value="<?= $r["id"] ?>" <?= $r["id"] == $selectedRestaurant ? "selected" : "" ?>>
-                    <?= htmlspecialchars($r["name"] . " (" . $r["city"] . ")") ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <p class="hint">Sobald eine Sauna gewählt ist, werden die Restaurants nach Entfernung sortiert.</p>
+        <div class="field">
+            <label for="restaurant"><span class="eyebrow eyebrow-taverne">Danach</span>Griechisches Restaurant</label>
+            <select name="restaurant_id" id="restaurant" required>
+                <option value="">– Restaurant wählen –</option>
+                <?php foreach ($restaurants as $r): ?>
+                    <option value="<?= $r["id"] ?>" <?= $r["id"] == $selectedRestaurant ? "selected" : "" ?>>
+                        <?= htmlspecialchars($r["name"] . " (" . $r["city"] . ")") ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <span class="field-hint">Sobald eine Sauna gewählt ist, werden die Restaurants nach Entfernung sortiert.</span>
+        </div>
 
-        <button type="submit" class="btn">Kombi anlegen &amp; bewerten</button>
+        <div class="form-footer">
+            <span class="muted">Jede Kombi gibt es nur einmal.</span>
+            <button type="submit" class="btn">Kombi anlegen &amp; bewerten</button>
+        </div>
     </form>
     <?php endif; ?>
 </div>
 
+<?php
+ob_start();
+?>
 <script>
 var JSON_SAUNAS = <?= json_encode($saunas, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 var JSON_RESTAURANTS = <?= json_encode($restaurants, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
@@ -140,6 +129,5 @@ if (saunaSelect) {
     sortRestaurants();
 }
 </script>
-
-</body>
-</html>
+<?php
+page_end(ob_get_clean());

@@ -93,58 +93,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $sent = true;
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Passwort vergessen</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body { font-family: Arial; background: #f4f4f4; }
-.login-box {
-    max-width: 400px; margin: 80px auto; background: white;
-    padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-input {  padding: 10px;
-    width: 100%;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-button { padding: 10px; width: 100%; background: #444; color: white; border: none; }
-.error { color: red; }
-.success { color: green; }
-a { color: #444; }
-</style>
-</head>
-<body>
 
-<div class="login-box">
-    <h2>Passwort vergessen</h2>
+page_start("Passwort vergessen", "", "narrow");
+?>
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="eyebrow">Zugang wiederherstellen</span>
+        <h1>Passwort vergessen</h1>
+        <?php if (!$sent): ?>
+            <p>Gib die E-Mail-Adresse deines Kontos ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegen kannst.</p>
+        <?php endif; ?>
+    </div>
 
     <?php if ($sent): ?>
-        <p class="success">
+        <div class="alert alert-success">
             Falls ein Konto mit dieser E-Mail-Adresse existiert, haben wir dir einen Link zum
             Zurücksetzen deines Passworts geschickt. Schau auch im Spam-Ordner nach.
-        </p>
+        </div>
     <?php else: ?>
-        <p>Gib die E-Mail-Adresse deines Kontos ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegen kannst.</p>
-
         <?php if ($error): ?>
-            <p class="error"><?= htmlspecialchars($error) ?></p>
+            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="POST">
-            <input type="email" name="email" placeholder="E-Mail-Adresse" required
-                   value="<?= htmlspecialchars($email) ?>" />
-            <button type="submit">Link anfordern</button>
+            <div class="field">
+                <label for="email">E-Mail-Adresse</label>
+                <input type="email" id="email" name="email" autocomplete="email" required
+                       value="<?= htmlspecialchars($email) ?>" />
+            </div>
+            <button type="submit" class="btn btn-block">Link anfordern</button>
         </form>
     <?php endif; ?>
 
-    <p><a href="index.php?view=login">← Zurück zum Login</a></p>
+    <div class="form-footer">
+        <a href="index.php?view=login" class="btn btn-ghost">← Zurück zum Login</a>
+    </div>
 </div>
 
-</body>
-</html>
+<?php page_end(); ?>

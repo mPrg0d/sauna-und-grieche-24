@@ -47,57 +47,47 @@ if ($reset && $_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Neues Passwort festlegen</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body { font-family: Arial; background: #f4f4f4; }
-.login-box {
-    max-width: 400px; margin: 80px auto; background: white;
-    padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-input {  padding: 10px;
-    width: 100%;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-button { padding: 10px; width: 100%; background: #444; color: white; border: none; }
-.error { color: red; }
-a { color: #444; }
-</style>
-</head>
-<body>
 
-<div class="login-box">
-    <h2>Neues Passwort festlegen</h2>
+// Token in der URL nicht per Referrer an Fremdseiten (z. B. Google Fonts) weitergeben
+page_start("Neues Passwort", '<meta name="referrer" content="no-referrer">', "narrow");
+?>
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="eyebrow">Zugang wiederherstellen</span>
+        <h1>Neues Passwort festlegen</h1>
+        <?php if ($reset): ?>
+            <p>Konto: <strong><?= htmlspecialchars($reset["username"]) ?></strong></p>
+        <?php endif; ?>
+    </div>
 
     <?php if (!$reset): ?>
-        <p class="error">Dieser Link ist ungültig, abgelaufen oder wurde bereits verwendet.</p>
-        <p><a href="index.php?view=password_forgot">Neuen Link anfordern</a></p>
+        <div class="alert alert-error">Dieser Link ist ungültig, abgelaufen oder wurde bereits verwendet.</div>
+        <a class="btn" href="index.php?view=password_forgot">Neuen Link anfordern</a>
     <?php else: ?>
-        <p>Konto: <strong><?= htmlspecialchars($reset["username"]) ?></strong></p>
-
         <?php if ($error): ?>
-            <p class="error"><?= htmlspecialchars($error) ?></p>
+            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="POST" action="index.php?view=password_reset&token=<?= htmlspecialchars($token) ?>">
-            <input type="password" name="new_password" placeholder="Neues Passwort (mind. <?= PASSWORD_MIN_LENGTH ?> Zeichen)"
-                   minlength="<?= PASSWORD_MIN_LENGTH ?>" autocomplete="new-password" required />
-            <input type="password" name="new_password_repeat" placeholder="Neues Passwort wiederholen"
-                   minlength="<?= PASSWORD_MIN_LENGTH ?>" autocomplete="new-password" required />
-            <button type="submit">Passwort speichern</button>
+            <div class="field">
+                <label for="new_password">Neues Passwort</label>
+                <input type="password" id="new_password" name="new_password"
+                       minlength="<?= PASSWORD_MIN_LENGTH ?>" autocomplete="new-password" required />
+                <span class="field-hint">Mindestens <?= PASSWORD_MIN_LENGTH ?> Zeichen.</span>
+            </div>
+            <div class="field">
+                <label for="new_password_repeat">Neues Passwort wiederholen</label>
+                <input type="password" id="new_password_repeat" name="new_password_repeat"
+                       minlength="<?= PASSWORD_MIN_LENGTH ?>" autocomplete="new-password" required />
+            </div>
+            <button type="submit" class="btn btn-block">Passwort speichern</button>
         </form>
     <?php endif; ?>
 
-    <p><a href="index.php?view=login">← Zurück zum Login</a></p>
+    <div class="form-footer">
+        <a href="index.php?view=login" class="btn btn-ghost">← Zurück zum Login</a>
+    </div>
 </div>
 
-</body>
-</html>
+<?php page_end(); ?>

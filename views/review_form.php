@@ -21,79 +21,82 @@ if (!$target) {
 }
 
 $flash = flash_take();
+
+$typeLabels = [
+    "sauna"      => "Sauna",
+    "restaurant" => "Taverne",
+    "combi"      => "Kombi-Erlebnis",
+];
+
+page_start("Bewertung schreiben", "", "narrow");
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Bewertung schreiben</title>
-<style>
-body { font-family: Arial; background: #f4f4f4; }
-.box { max-width: 600px; margin: 40px auto; background: white; padding: 20px; border-radius: 10px; }
-input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; }
-.btn {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #2b2b2b;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    transition: 0.2s;
-}
 
-.btn:hover {
-    background: #1f1f1f;
-}
-.flash { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; }
-.hint { color: #666; font-size: 0.9rem; }
-</style>
-</head>
-<body>
-
-<div class="box">
-<a href="index.php<?= section_anchor($target_type) ?>" class="btn" onclick="return confirm('Wenn du zurück gehst, wird deine Eingabe nicht gespeichert. Wirklich zurück?');">
+<a href="index.php<?= section_anchor($target_type) ?>" class="btn btn-ghost back-link"
+   onclick="return confirm('Wenn du zurück gehst, wird deine Eingabe nicht gespeichert. Wirklich zurück?');">
     ← Zurück
 </a>
 
-    <?php if ($flash): ?>
-        <p class="flash"><?= htmlspecialchars($flash) ?></p>
-    <?php endif; ?>
+<?php if ($flash): ?>
+    <div class="alert alert-success"><?= htmlspecialchars($flash) ?></div>
+<?php endif; ?>
 
-    <h2>Bewertung schreiben</h2>
-    <p><strong><?= htmlspecialchars($target["name"]) ?></strong></p>
-
-    <?php if ($target_type === "combi"): ?>
-        <p class="hint">
-            Bewerte das Gesamterlebnis: Wie gut passen Sauna und Restaurant zusammen?
-            Wie war der Weg, das Timing, das Essen nach dem Saunagang?
-            Sauna und Restaurant einzeln bewertest du auf deren eigenen Seiten.
-        </p>
-    <?php endif; ?>
+<div class="panel">
+    <div class="panel-header">
+        <span class="eyebrow"><?= $typeLabels[$target_type] ?> bewerten</span>
+        <h1><?= target_title_html($target_type, $target) ?></h1>
+        <?php if ($target_type === "combi"): ?>
+            <p>
+                Bewerte das Gesamterlebnis: Wie gut passen Sauna und Restaurant zusammen?
+                Wie war der Weg, das Timing, das Essen nach dem Saunagang?
+                Sauna und Restaurant einzeln bewertest du auf deren eigenen Seiten.
+            </p>
+        <?php else: ?>
+            <p><?= htmlspecialchars($target["city"]) ?></p>
+        <?php endif; ?>
+    </div>
 
     <form action="index.php?action=review_submit" method="POST">
         <input type="hidden" name="target_type" value="<?= htmlspecialchars($target_type) ?>">
         <input type="hidden" name="target_id" value="<?= $target_id ?>">
 
-        <label>Titel</label>
-        <input type="text" name="title" required>
+        <fieldset class="field">
+            <legend>Sterne</legend>
+            <div class="star-input">
+                <?php for ($i = RATING_MAX; $i >= 1; $i--): ?>
+                    <input type="radio" id="star-<?= $i ?>" name="rating" value="<?= $i ?>" required>
+                    <label for="star-<?= $i ?>" title="<?= $i ?> von <?= RATING_MAX ?> Sternen">★</label>
+                <?php endfor; ?>
+            </div>
+            <span class="field-hint" id="star-hint">Wähle 1 bis <?= RATING_MAX ?> Sterne.</span>
+        </fieldset>
 
-        <label>Bewertung</label>
-        <textarea name="content" rows="6" required></textarea>
+        <div class="field">
+            <label for="title">Titel</label>
+            <input type="text" id="title" name="title" maxlength="255" required>
+        </div>
 
-        <label>Sterne (1–7)</label>
-        <select name="rating" required>
-            <option value="1">1 ★</option>
-            <option value="2">2 ★★</option>
-            <option value="3">3 ★★★</option>
-            <option value="4">4 ★★★★</option>
-            <option value="5">5 ★★★★★</option>
-            <option value="6">6 ★★★★★★</option>
-            <option value="7">7 ★★★★★★★</option>
-        </select>
+        <div class="field">
+            <label for="content">Deine Bewertung</label>
+            <textarea id="content" name="content" rows="7" required></textarea>
+        </div>
 
-        <button type="submit" class="btn">Bewertung absenden</button>
+        <div class="form-footer">
+            <span class="muted">Deine Bewertung erscheint mit deinem Benutzernamen.</span>
+            <button type="submit" class="btn">Bewertung absenden</button>
+        </div>
     </form>
 </div>
-</body>
-</html>
+
+<?php
+ob_start();
+?>
+<script>
+// Gewählte Sternezahl als Text anzeigen
+document.querySelectorAll('.star-input input').forEach(function (input) {
+    input.addEventListener('change', function () {
+        document.getElementById('star-hint').textContent = input.value + ' von <?= RATING_MAX ?> Sternen';
+    });
+});
+</script>
+<?php
+page_end(ob_get_clean());
