@@ -2,7 +2,7 @@
 
 // Nur eingeloggt
 if (!isset($_SESSION["user_id"])) {
-    die("You must be logged in to access settings.");
+    die("Bitte melde dich an, um die Einstellungen zu öffnen.");
 }
 
 $username = $_SESSION["username"];
@@ -11,7 +11,7 @@ $username = $_SESSION["username"];
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>User Settings</title>
+<title>Einstellungen</title>
 <style>
 body { font-family: Arial; background: #f4f4f4; }
 .box {
@@ -56,11 +56,11 @@ button {
     <a href="index.php" class="btn">← Zurück</a>
 
 
-    <h2>User Settings</h2>
-    <p><strong>Logged in as:</strong> <?= htmlspecialchars($username) ?></p>
+    <h2>Einstellungen</h2>
+    <p><strong>Angemeldet als:</strong> <?= htmlspecialchars($username) ?></p>
 
     <?php if (isset($_GET["success"])): ?>
-        <p class="success">Password updated successfully.</p>
+        <p class="success">Dein Passwort wurde geändert.</p>
     <?php endif; ?>
 
     <?php if (isset($_GET["error"])): ?>
@@ -68,16 +68,16 @@ button {
     <?php endif; ?>
 
     <form action="password_update.php" method="POST">
-        <label>Current Password</label>
+        <label>Aktuelles Passwort</label>
         <input type="password" name="current_password" required>
 
-        <label>New Password</label>
-        <input type="password" name="new_password" required>
+        <label>Neues Passwort (mind. 8 Zeichen)</label>
+        <input type="password" name="new_password" minlength="8" autocomplete="new-password" required>
 
-        <label>Repeat New Password</label>
-        <input type="password" name="new_password_repeat" required>
+        <label>Neues Passwort wiederholen</label>
+        <input type="password" name="new_password_repeat" minlength="8" autocomplete="new-password" required>
 
-        <button type="submit">Update Password</button>
+        <button type="submit">Passwort ändern</button>
     </form>
 </div>
 

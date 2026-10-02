@@ -175,6 +175,26 @@ if (!in_array("chk_rating_range", $checks, true)) {
     execQuery($pdo, "ALTER TABLE ratings ADD CONSTRAINT chk_rating_range CHECK (rating BETWEEN 1 AND 7)");
 }
 
+// E-Mail-Adresse für "Passwort vergessen"
+addColumnIfMissing($pdo, "users", "email", "VARCHAR(255) NULL");
+
+/* ------------------------------
+   PASSWORD RESETS TABLE
+   Es wird nur der SHA-256-Hash des Tokens gespeichert
+------------------------------ */
+execQuery($pdo, "
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_token (token_hash),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
 // Wer hat den Ort angelegt?
 addColumnIfMissing($pdo, "saunas", "created_by", "INT NULL");
 addColumnIfMissing($pdo, "restaurants", "created_by", "INT NULL");

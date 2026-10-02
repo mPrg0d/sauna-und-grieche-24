@@ -14,7 +14,9 @@ $allowed_views = [
     'review_form',
     'reviews_list',
     'place_form',
-    'combi_form'
+    'combi_form',
+    'password_forgot',
+    'password_reset'
 ];
 
 // Controllers (POST handlers)

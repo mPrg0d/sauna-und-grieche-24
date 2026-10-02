@@ -2,26 +2,31 @@
 session_start();
 require_once __DIR__ . '/db.php';
 
+const PASSWORD_MIN_LENGTH = 8;
+
 if (!isset($_SESSION["user_id"])) {
-    die("Not logged in.");
+    die("Nicht eingeloggt.");
 }
 
-$stmt = $pdo->prepare("SELECT id, username, password_hash FROM users WHERE id = :id LIMIT 1");
-$stmt->execute(["id" => $user_id]);
-var_dump($stmt->fetch());
-exit;
+function back_to_settings(string $query): void
+{
+    header("Location: index.php?view=user_settings&" . $query);
+    exit;
+}
 
 $user_id = $_SESSION["user_id"];
 
-$current = $_POST["current_password"] ?? "";
-$new = $_POST["new_password"] ?? "";
-$repeat = $_POST["new_password_repeat"] ?? "";
-
+$current = (string)($_POST["current_password"] ?? "");
+$new     = (string)($_POST["new_password"] ?? "");
+$repeat  = (string)($_POST["new_password_repeat"] ?? "");
 
 // Validierung
+if (mb_strlen($new) < PASSWORD_MIN_LENGTH) {
+    back_to_settings("error=" . urlencode("Das neue Passwort muss mindestens " . PASSWORD_MIN_LENGTH . " Zeichen lang sein."));
+}
+
 if ($new !== $repeat) {
-    header("Location: user_settings.php?error=Passwords do not match");
-    exit;
+    back_to_settings("error=" . urlencode("Die neuen Passwörter stimmen nicht überein."));
 }
 
 // Aktuelles Passwort prüfen
@@ -30,8 +35,7 @@ $stmt->execute(["id" => $user_id]);
 $user = $stmt->fetch();
 
 if (!$user || !password_verify($current, $user["password_hash"])) {
-    header("Location: user_settings.php?error=Current password incorrect");
-    exit;
+    back_to_settings("error=" . urlencode("Das aktuelle Passwort ist falsch."));
 }
 
 // Neues Passwort speichern
@@ -40,5 +44,4 @@ $new_hash = password_hash($new, PASSWORD_DEFAULT);
 $stmt = $pdo->prepare("UPDATE users SET password_hash = :pw WHERE id = :id");
 $stmt->execute(["pw" => $new_hash, "id" => $user_id]);
 
-header("Location: user_settings.php?success=1");
-exit;
+back_to_settings("success=1");

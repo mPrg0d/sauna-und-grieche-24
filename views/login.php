@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
 
     } else {
-        $error = "Invalid username or password.";
+        $error = "Benutzername oder Passwort ist falsch.";
     }
 }
 ?>
@@ -47,6 +47,8 @@ input {  padding: 10px;
 }
 button { padding: 10px; width: 100%; background: #444; color: white; border: none; }
 .error { color: red; }
+.success { color: green; }
+.forgot { display: block; margin-top: 15px; text-align: center; color: #444; }
 </style>
 </head>
 <body>
@@ -54,15 +56,21 @@ button { padding: 10px; width: 100%; background: #444; color: white; border: non
 <div class="login-box">
     <h2>Login</h2>
 
+    <?php if (isset($_GET["reset"])): ?>
+        <p class="success">Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.</p>
+    <?php endif; ?>
+
     <?php if ($error): ?>
         <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
+        <input type="text" name="username" placeholder="Benutzername" required />
+        <input type="password" name="password" placeholder="Passwort" required />
         <button type="submit">Login</button>
     </form>
+
+    <a class="forgot" href="index.php?view=password_forgot">Passwort vergessen?</a>
 </div>
 
 </body>
