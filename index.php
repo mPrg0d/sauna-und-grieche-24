@@ -16,7 +16,8 @@ $allowed_views = [
     'place_form',
     'combi_form',
     'password_forgot',
-    'password_reset'
+    'password_reset',
+    'minigame'
 ];
 
 // Controllers (POST handlers)
@@ -24,7 +25,8 @@ $allowed_actions = [
     'review_submit',
     'review_update',
     'place_submit',
-    'combi_submit'
+    'combi_submit',
+    'game_score_submit'
 ];
 
 // Controller routing

@@ -232,5 +232,19 @@ CREATE TABLE IF NOT EXISTS password_resets (
 addColumnIfMissing($pdo, "saunas", "created_by", "INT NULL");
 addColumnIfMissing($pdo, "restaurants", "created_by", "INT NULL");
 
+/* ------------------------------
+   GAME SCORES TABLE (Minispiel-Bestenliste)
+------------------------------ */
+execQuery($pdo, "
+CREATE TABLE IF NOT EXISTS game_scores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    time_ms INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_time (time_ms),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
 echo "<h2>Bootstrap completed successfully.</h2>";
 echo "<p>All required tables have been created.</p>";

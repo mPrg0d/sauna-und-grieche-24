@@ -196,6 +196,7 @@ function page_start(string $title, string $extraHead = "", string $width = "wide
             <a href="index.php#saunen">Saunen</a>
             <a href="index.php#restaurants">Tavernen</a>
             <a href="index.php#combis">Kombis</a>
+            <a href="index.php?view=minigame">Minispiel</a>
             <span class="site-nav-sep" aria-hidden="true"></span>
             <?php if ($loggedIn): ?>
                 <a href="index.php?view=user_settings" class="site-nav-user">
@@ -300,4 +301,21 @@ function load_target(PDO $pdo, string $type, int $id): ?array
     $stmt = $pdo->prepare("SELECT id, name, city, lat, lng FROM $table WHERE id = :id LIMIT 1");
     $stmt->execute(["id" => $id]);
     return $stmt->fetch() ?: null;
+}
+
+/**
+ * Minispiel-Bestenliste: beste Zeit je Nutzer, schnellste zuerst
+ */
+function load_highscores(PDO $pdo, int $limit = 10): array
+{
+    $stmt = $pdo->prepare("
+        SELECT u.username, MIN(g.time_ms) AS best_ms, COUNT(*) AS runs
+        FROM game_scores g
+        JOIN users u ON u.id = g.user_id
+        GROUP BY g.user_id, u.username
+        ORDER BY best_ms
+        LIMIT $limit
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll();
 }
