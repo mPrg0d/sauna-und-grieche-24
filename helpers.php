@@ -6,6 +6,9 @@
 
 const RATING_MAX = 7;
 
+// Minispiel-Version: bei geänderten Spielregeln erhöhen → neue Bestenliste
+const GAME_VERSION = 2;
+
 // Erlaubte Bewertungsziele
 const TARGET_TYPES = ['sauna', 'restaurant', 'combi'];
 
@@ -312,10 +315,11 @@ function load_highscores(PDO $pdo, int $limit = 10): array
         SELECT u.username, MIN(g.time_ms) AS best_ms, COUNT(*) AS runs
         FROM game_scores g
         JOIN users u ON u.id = g.user_id
+        WHERE g.version = :v
         GROUP BY g.user_id, u.username
         ORDER BY best_ms
         LIMIT $limit
     ");
-    $stmt->execute();
+    $stmt->execute(["v" => GAME_VERSION]);
     return $stmt->fetchAll();
 }

@@ -246,5 +246,8 @@ CREATE TABLE IF NOT EXISTS game_scores (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
+// Spielregeln-Version; alte Läufe (Version 1) bleiben erhalten, zählen aber nicht mehr
+addColumnIfMissing($pdo, "game_scores", "version", "INT NOT NULL DEFAULT 1");
+
 echo "<h2>Bootstrap completed successfully.</h2>";
 echo "<p>All required tables have been created.</p>";
