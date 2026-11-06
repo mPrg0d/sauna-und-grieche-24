@@ -4,6 +4,6 @@
 
 # Einrichtungs-Skripte nicht öffentlich aufrufbar
 # (zum erneuten Ausführen vorübergehend auskommentieren)
-#<FilesMatch "^(bootstrap|db_fill)\.php$">
-#    Require all denied
-#</FilesMatch>
+<FilesMatch "^(bootstrap|db_fill)\.php$">
+    Require all denied
+</FilesMatch>
