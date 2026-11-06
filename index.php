@@ -191,6 +191,9 @@ page_start(
                     <a class="btn btn-outline btn-sm" href="index.php?view=review_form&type=<?= $sec["type"] ?>&id=<?= $p['id'] ?>">
                         Bewerten
                     </a>
+                    <a class="btn btn-ghost btn-sm" href="index.php?view=place_form&type=<?= $sec["type"] ?>&id=<?= $p['id'] ?>">
+                        Bearbeiten
+                    </a>
                 <?php endif; ?>
             </div>
         </article>

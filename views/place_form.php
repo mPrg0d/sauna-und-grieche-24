@@ -14,12 +14,20 @@ if (!is_string($type) || !array_key_exists($type, PLACE_TABLES)) {
 
 $label = $type === "sauna" ? "Sauna" : "griechisches Restaurant";
 
+// Mit id → vorhandenen Ort bearbeiten (gleiches Formular wie beim Anlegen)
+$id = (int)($_GET["id"] ?? 0);
+$place = $id ? load_target($pdo, $type, $id) : null;
+
+if ($id && !$place) {
+    die("Ort nicht gefunden.");
+}
+
 // Fehler und Eingaben aus dem letzten Versuch (falls die Prüfung fehlgeschlagen ist)
 $error = $_SESSION["form_error"] ?? null;
-$old   = $_SESSION["form_old"] ?? [];
+$old   = $_SESSION["form_old"] ?? $place ?? [];
 unset($_SESSION["form_error"], $_SESSION["form_old"]);
 
-$heading = ucfirst($label) . " hinzufügen";
+$heading = ucfirst($label) . ($place ? " bearbeiten" : " hinzufügen");
 
 page_start($heading, '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />', "narrow");
 ?>
@@ -28,9 +36,11 @@ page_start($heading, '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9
 
 <div class="panel">
     <div class="panel-header">
-        <span class="eyebrow <?= $type === "sauna" ? "eyebrow-sauna" : "eyebrow-taverne" ?>">Neuer Eintrag</span>
+        <span class="eyebrow <?= $type === "sauna" ? "eyebrow-sauna" : "eyebrow-taverne" ?>"><?= $place ? "Eintrag bearbeiten" : "Neuer Eintrag" ?></span>
         <h1><?= htmlspecialchars($heading) ?></h1>
+        <?php if (!$place): ?>
         <p>Danach kann der Ort von allen Autoren bewertet und mit anderen Orten zu einer Kombi verbunden werden.</p>
+        <?php endif; ?>
     </div>
 
     <?php if ($error): ?>
@@ -39,6 +49,9 @@ page_start($heading, '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9
 
     <form id="place-form" action="index.php?action=place_submit" method="POST">
         <input type="hidden" name="type" value="<?= htmlspecialchars($type) ?>">
+        <?php if ($place): ?>
+            <input type="hidden" name="id" value="<?= (int)$place["id"] ?>">
+        <?php endif; ?>
         <input type="hidden" name="lat" id="lat" value="<?= htmlspecialchars($old["lat"] ?? "") ?>">
         <input type="hidden" name="lng" id="lng" value="<?= htmlspecialchars($old["lng"] ?? "") ?>">
 
@@ -69,7 +82,7 @@ page_start($heading, '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9
 
         <div class="form-footer">
             <span class="muted">Alle Felder sind Pflichtfelder.</span>
-            <button type="submit" class="btn"><?= htmlspecialchars(ucfirst($label)) ?> speichern</button>
+            <button type="submit" class="btn"><?= $place ? "Änderungen speichern" : htmlspecialchars(ucfirst($label)) . " speichern" ?></button>
         </div>
     </form>
 </div>
